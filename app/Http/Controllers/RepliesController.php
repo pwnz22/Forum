@@ -13,8 +13,6 @@ class RepliesController extends Controller
         $this->middleware('auth');
     }
 
-
-
     public function store($channelId, Thread $thread)
     {
         $this->validate(request(), [
@@ -25,6 +23,6 @@ class RepliesController extends Controller
             'user_id' => auth()->id()
         ]);
 
-        return back();
+        return back()->with('flash', 'Your reply has been posted.');
     }
 }
