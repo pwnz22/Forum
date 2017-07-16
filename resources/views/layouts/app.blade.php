@@ -15,7 +15,7 @@
 
     <!-- Scripts -->
     <script>
-        window.Laravel = {!! json_encode([
+      window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
         ]) !!};
     </script>
@@ -24,12 +24,22 @@
         body {
             padding-bottom: 100px;
         }
+
         .level {
             display: flex;
             align-items: center;
         }
+
         .flex {
             flex: 1;
+        }
+
+        .mr-1 {
+            margin-right: 1em;
+        }
+
+        [v-cloak] {
+            display: none;
         }
     </style>
 </head>
