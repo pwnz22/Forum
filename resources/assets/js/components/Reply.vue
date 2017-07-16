@@ -1,5 +1,8 @@
 <script>
+  import Favorite from './Favorite'
+
   export default {
+    components: {Favorite},
     props: ['attributes'],
     data() {
       return {
