@@ -5,7 +5,7 @@
                 <h5 class="flex">
                     <a :href="`/profile/${data.owner.name}`"
                        v-text="data.owner.name">
-                    </a> said {{ data.created_at }}...
+                    </a> said <span v-text="ago"></span>
                 </h5>
 
                 <div>
@@ -28,22 +28,21 @@
             <div v-else v-text="body"></div>
         </div>
 
-        <!--@can('update', $reply)-->
         <div class="panel-footer level" v-if="canUpdate">
             <button class="btn btn-xs mr-1" @click="editing = true">Edit</button>
             <button class="btn btn-danger btn-xs mr-1" @click="destroy">Delete</button>
         </div>
-        <!--@endcan-->
     </div>
 </template>
 
 <script>
   import Favorite from './Favorite'
+  import moment from 'moment'
 
   export default {
     components: {Favorite},
     props: ['data'],
-    data() {
+    data () {
       return {
         editing: false,
         id: this.data.id,
@@ -51,15 +50,18 @@
       }
     },
     computed: {
-      signedIn() {
+      signedIn () {
         return window.App.signedIn
       },
-      canUpdate() {
+      canUpdate () {
         return this.authorize(user => this.data.user_id === user.id)
+      },
+      ago () {
+        return moment(this.data.created_at).fromNow()
       }
     },
     methods: {
-      update() {
+      update () {
         axios.patch(`/replies/${this.data.id}`, {
           body: this.body
         })
@@ -67,7 +69,7 @@
         this.editing = false
         flash('Updated!')
       },
-      destroy() {
+      destroy () {
         axios.delete(`/replies/${this.data.id}`)
         this.$emit('deleted', this.data.id)
       }
