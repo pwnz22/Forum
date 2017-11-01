@@ -36,43 +36,45 @@
 </template>
 
 <script>
-  import Favorite from './Favorite'
-  import moment from 'moment'
+    import Favorite from './Favorite'
+    import moment from 'moment'
 
-  export default {
-    components: {Favorite},
-    props: ['data'],
-    data () {
-      return {
-        editing: false,
-        id: this.data.id,
-        body: this.data.body
-      }
-    },
-    computed: {
-      signedIn () {
-        return window.App.signedIn
-      },
-      canUpdate () {
-        return this.authorize(user => this.data.user_id === user.id)
-      },
-      ago () {
-        return moment(this.data.created_at).fromNow()
-      }
-    },
-    methods: {
-      update () {
-        axios.patch(`/replies/${this.data.id}`, {
-          body: this.body
-        })
+    export default {
+        components: {Favorite},
+        props: ['data'],
+        data () {
+            return {
+                editing: false,
+                id: this.data.id,
+                body: this.data.body
+            }
+        },
+        computed: {
+            signedIn () {
+                return window.App.signedIn
+            },
+            canUpdate () {
+                return this.authorize(user => this.data.user_id === user.id)
+            },
+            ago () {
+                return moment(this.data.created_at).fromNow()
+            }
+        },
+        methods: {
+            update () {
+                axios.patch(`/replies/${this.data.id}`, {
+                    body: this.body
+                }).catch(error => {
+                    flash(error.response.data, 'danger')
+                })
 
-        this.editing = false
-        flash('Updated!')
-      },
-      destroy () {
-        axios.delete(`/replies/${this.data.id}`)
-        this.$emit('deleted', this.data.id)
-      }
+                this.editing = false
+                flash('Updated!')
+            },
+            destroy () {
+                axios.delete(`/replies/${this.data.id}`)
+                this.$emit('deleted', this.data.id)
+            }
+        }
     }
-  }
 </script>
