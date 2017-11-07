@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('header')
+    <link rel="stylesheet" href="/css/vendor/jquery.atwho.css">
+@endsection
+
 @section('content')
     <thread-view :initial-replies-count="{{ $thread->replies_count }}" inline-template>
         <div class="container">
@@ -45,8 +49,9 @@
                             </p>
 
                             <p>
-{{--                                {{ dd($thread->isSubscribedTo) }}--}}
-                                <subscribe-button :active="{{ json_encode($thread->isSubscribedTo) }}"></subscribe-button>
+                                {{--                                {{ dd($thread->isSubscribedTo) }}--}}
+                                <subscribe-button
+                                        :active="{{ json_encode($thread->isSubscribedTo) }}"></subscribe-button>
                             </p>
                         </div>
                     </div>
