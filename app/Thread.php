@@ -50,12 +50,16 @@ class Thread extends Model
 
     public function addReply($reply)
     {
-
         $reply = $this->replies()->create($reply);
 
         event(new ThreadReceivedNewReply($reply));
 
         return $reply;
+    }
+
+    public function lock()
+    {
+        $this->update(['locked' => true]);
     }
 
 //    public function notifySubscribers($reply)
