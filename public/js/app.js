@@ -27290,21 +27290,34 @@ window.Vue = __webpack_require__(134);
 window.axios = __webpack_require__(137);
 
 window.axios.defaults.headers.common = {
-  'X-CSRF-TOKEN': window.App.csrfToken,
-  'X-Requested-With': 'XMLHttpRequest'
+    'X-CSRF-TOKEN': window.App.csrfToken,
+    'X-Requested-With': 'XMLHttpRequest'
 };
 
 window.events = new Vue();
 
-Vue.prototype.authorize = function (handler) {
-  var user = window.App.user;
-  return user ? handler(user) : false;
+var authorizations = __webpack_require__(206);
+
+Vue.prototype.authorize = function () {
+    if (!window.App.user) return false;
+
+    for (var _len = arguments.length, params = Array(_len), _key = 0; _key < _len; _key++) {
+        params[_key] = arguments[_key];
+    }
+
+    if (typeof params[0] === 'string') {
+        return authorizations[params[0]](params[1]);
+    }
+
+    return params[0](window.App.user);
 };
 
-window.flash = function (message) {
-  var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
+Vue.prototype.signedIn = window.App.signedIn;
 
-  window.events.$emit('flash', { message: message, level: level });
+window.flash = function (message) {
+    var level = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'success';
+
+    window.events.$emit('flash', { message: message, level: level });
 };
 
 /***/ }),
@@ -42415,21 +42428,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             editing: false,
             id: this.data.id,
             body: this.data.body,
-            isBest: false
+            isBest: false,
+            reply: this.data
         };
     },
 
     computed: {
-        signedIn: function signedIn() {
-            return window.App.signedIn;
-        },
-        canUpdate: function canUpdate() {
-            var _this = this;
-
-            return this.authorize(function (user) {
-                return _this.data.user_id === user.id;
-            });
-        },
         ago: function ago() {
             return __WEBPACK_IMPORTED_MODULE_1_moment___default()(this.data.created_at).fromNow();
         }
@@ -42961,7 +42965,7 @@ var render = function() {
       ]),
       _vm._v(" "),
       _c("div", { staticClass: "panel-footer level" }, [
-        _vm.canUpdate
+        _vm.authorize("updateReply", _vm.reply)
           ? _c("div", [
               _c(
                 "button",
@@ -43107,48 +43111,42 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      body: ''
-    };
-  },
+    data: function data() {
+        return {
+            body: ''
+        };
+    },
 
 
-  computed: {
-    signedIn: function signedIn() {
-      return window.App.signedIn;
-    }
-  },
+    methods: {
+        addReply: function addReply() {
+            var _this = this;
 
-  methods: {
-    addReply: function addReply() {
-      var _this = this;
+            axios.post(location.pathname + '/replies', { body: this.body }).catch(function (error) {
+                flash(error.response.data, 'danger');
+            }).then(function (_ref) {
+                var data = _ref.data;
 
-      axios.post(location.pathname + '/replies', { body: this.body }).catch(function (error) {
-        flash(error.response.data, 'danger');
-      }).then(function (_ref) {
-        var data = _ref.data;
-
-        _this.body = '';
-        flash('Your reply has been posted.');
-        _this.$emit('created', data);
-      });
-    }
-  },
-
-  mounted: function mounted() {
-    $('#body').atwho({
-      at: '@',
-      delay: 750,
-      callbacks: {
-        remoteFilter: function remoteFilter(query, callback) {
-          $.getJSON('/api/users', { q: query }, function (usernames) {
-            callback(usernames);
-          });
+                _this.body = '';
+                flash('Your reply has been posted.');
+                _this.$emit('created', data);
+            });
         }
-      }
-    });
-  }
+    },
+
+    mounted: function mounted() {
+        $('#body').atwho({
+            at: '@',
+            delay: 750,
+            callbacks: {
+                remoteFilter: function remoteFilter(query, callback) {
+                    $.getJSON('/api/users', { q: query }, function (usernames) {
+                        callback(usernames);
+                    });
+                }
+            }
+        });
+    }
 });
 
 /***/ }),
@@ -45459,6 +45457,26 @@ if (false) {
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 198 */,
+/* 199 */,
+/* 200 */,
+/* 201 */,
+/* 202 */,
+/* 203 */,
+/* 204 */,
+/* 205 */,
+/* 206 */
+/***/ (function(module, exports) {
+
+var user = window.App.user;
+
+module.exports = {
+    updateReply: function updateReply(reply) {
+        return reply.user_id === user.id;
+    }
+};
 
 /***/ })
 /******/ ]);
