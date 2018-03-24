@@ -41430,6 +41430,9 @@ module.exports = {
         var prop = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'user_id';
 
         return model[prop] === user.id;
+    },
+    isAdmin: function isAdmin() {
+        return ['Test', 'JohnDoe'].includes(user.name);
     }
 };
 
@@ -42208,13 +42211,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  props: ['initialRepliesCount'],
-  components: { Replies: __WEBPACK_IMPORTED_MODULE_0__components_Replies___default.a, SubscribeButton: __WEBPACK_IMPORTED_MODULE_1__components_SubscribeButton___default.a },
-  data: function data() {
-    return {
-      repliesCount: this.initialRepliesCount
-    };
-  }
+    props: ['dataRepliesCount', 'dataLocked'],
+    components: { Replies: __WEBPACK_IMPORTED_MODULE_0__components_Replies___default.a, SubscribeButton: __WEBPACK_IMPORTED_MODULE_1__components_SubscribeButton___default.a },
+    data: function data() {
+        return {
+            repliesCount: this.dataRepliesCount,
+            locked: this.dataLocked
+        };
+    }
 });
 
 /***/ }),
@@ -42288,45 +42292,49 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
 
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-  components: { Reply: __WEBPACK_IMPORTED_MODULE_0__Reply___default.a, NewReply: __WEBPACK_IMPORTED_MODULE_1__NewReply___default.a },
+    components: { Reply: __WEBPACK_IMPORTED_MODULE_0__Reply___default.a, NewReply: __WEBPACK_IMPORTED_MODULE_1__NewReply___default.a },
 
-  mixins: [__WEBPACK_IMPORTED_MODULE_2__mixins_collection__["a" /* default */]],
+    mixins: [__WEBPACK_IMPORTED_MODULE_2__mixins_collection__["a" /* default */]],
 
-  data: function data() {
-    return {
-      dataSet: false
-    };
-  },
-
-
-  methods: {
-    fetch: function fetch(page) {
-      axios.get(this.url(page)).then(this.refresh);
+    data: function data() {
+        return {
+            dataSet: false
+        };
     },
-    url: function url(page) {
-      if (!page) {
-        var query = location.search.match(/page=(\d+)/);
-        page = query ? query[1] : 1;
-      }
-      return location.pathname + '/replies?page=' + page;
-    },
-    refresh: function refresh(_ref) {
-      var data = _ref.data;
 
-      this.dataSet = data;
-      this.items = data.data;
-      window.scrollTo(0, 0);
+
+    methods: {
+        fetch: function fetch(page) {
+            axios.get(this.url(page)).then(this.refresh);
+        },
+        url: function url(page) {
+            if (!page) {
+                var query = location.search.match(/page=(\d+)/);
+                page = query ? query[1] : 1;
+            }
+            return location.pathname + '/replies?page=' + page;
+        },
+        refresh: function refresh(_ref) {
+            var data = _ref.data;
+
+            this.dataSet = data;
+            this.items = data.data;
+            window.scrollTo(0, 0);
+        }
+    },
+    created: function created() {
+        this.fetch();
     }
-  },
-  created: function created() {
-    this.fetch();
-  }
 });
 
 /***/ }),
@@ -44952,7 +44960,13 @@ var render = function() {
         on: { changed: _vm.fetch }
       }),
       _vm._v(" "),
-      _c("new-reply", { on: { created: _vm.add } })
+      _vm.$parent.locked
+        ? _c("p", [
+            _vm._v(
+              "\n        This thread has been locked. No more replies allowed.\n    "
+            )
+          ])
+        : _c("new-reply", { on: { created: _vm.add } })
     ],
     2
   )

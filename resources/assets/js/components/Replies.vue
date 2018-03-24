@@ -6,47 +6,51 @@
 
         <paginator :dataSet="dataSet" @changed="fetch"></paginator>
 
-        <new-reply @created="add"></new-reply>
+        <p v-if="$parent.locked">
+            This thread has been locked. No more replies allowed.
+        </p>
+
+        <new-reply @created="add" v-else></new-reply>
     </div>
 </template>
 
 <script>
-  import Reply from './Reply'
-  import NewReply from './NewReply'
-  import collection from '../mixins/collection'
+    import Reply from './Reply'
+    import NewReply from './NewReply'
+    import collection from '../mixins/collection'
 
-  export default {
-    components: {Reply, NewReply},
+    export default {
+        components: {Reply, NewReply},
 
-    mixins: [collection],
+        mixins: [collection],
 
-    data () {
-      return {
-        dataSet: false
-      }
-    },
+        data () {
+            return {
+                dataSet: false
+            }
+        },
 
-    methods: {
-      fetch (page) {
-        axios.get(this.url(page)).then(this.refresh)
-      },
+        methods: {
+            fetch (page) {
+                axios.get(this.url(page)).then(this.refresh)
+            },
 
-      url (page) {
-        if (!page) {
-          let query = location.search.match(/page=(\d+)/)
-          page = query ? query[1] : 1
+            url (page) {
+                if (!page) {
+                    let query = location.search.match(/page=(\d+)/)
+                    page = query ? query[1] : 1
+                }
+                return `${location.pathname}/replies?page=${page}`
+            },
+
+            refresh ({data}) {
+                this.dataSet = data
+                this.items = data.data
+                window.scrollTo(0, 0)
+            }
+        },
+        created () {
+            this.fetch()
         }
-        return `${location.pathname}/replies?page=${page}`
-      },
-
-      refresh ({data}) {
-        this.dataSet = data
-        this.items = data.data
-        window.scrollTo(0, 0)
-      }
-    },
-    created () {
-      this.fetch()
     }
-  }
 </script>
