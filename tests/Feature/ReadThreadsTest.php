@@ -19,7 +19,7 @@ class ReadThreadsTest extends TestCase
     /** @test */
     public function a_user_can_browse_threads()
     {
-        $response = $this->get('threads')
+        $this->get('threads')
             ->assertSee($this->thread->title);
     }
 
