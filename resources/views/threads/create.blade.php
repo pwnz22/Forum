@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('header')
+    <script src="https://www.google.com/recaptcha/api.js"></script>
+@endsection
+
 @section('content')
     <div class="container">
         <div class="row">
@@ -34,7 +38,11 @@
                             </div>
 
                             <div class="form-group">
-                                <button type="submit" class="btn btn-primary pull-right">Publish</button>
+                                <div class="g-recaptcha" data-sitekey="6Lch804UAAAAAJDmfNOqyAbjH_xj75OLDUmkBnxh"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Publish</button>
                             </div>
 
                         </form>
